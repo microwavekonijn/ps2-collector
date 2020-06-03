@@ -1,0 +1,30 @@
+{
+  "name": "ps2-alert-collector",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "node ./dist",
+    "dev": "ts-node ./src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/microwavekonijn/ps2-alert-collector.git"
+  },
+  "keywords": [
+    "websocket",
+    "typescript",
+    "ps2",
+    "planetside"
+  ],
+  "author": "Microwavekonijn",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/microwavekonijn/ps2-alert-collector/issues"
+  },
+  "homepage": "https://github.com/microwavekonijn/ps2-alert-collector#readme",
+  "devDependencies": {
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.3"
+  }
+}
