@@ -1,5 +1,5 @@
-import {ContainerModule} from 'inversify';
-import {get, getBool} from "./utils/env";
+import { ContainerModule } from 'inversify';
+import { get, getBool } from './utils/env';
 
 export default class App {
     /**
@@ -16,6 +16,8 @@ export default class App {
      * @return {ContainerModule[]} Modules used by the app
      */
     public get modules(): ContainerModule[] {
-        return [];
+        return [
+            require('../collector').default,
+        ];
     };
 }

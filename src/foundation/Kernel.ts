@@ -15,7 +15,7 @@ enum KernelState {
  */
 @injectable()
 export default class Kernel {
-    private static readonly logger = getLogger('foundation');
+    private static readonly logger = getLogger('kernel');
 
     public static readonly version: string = '1.0.0';
 
