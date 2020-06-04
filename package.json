@@ -5,7 +5,13 @@
   "scripts": {
     "start": "node ./dist",
     "dev": "ts-node ./src",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docker:up": "docker-compose up --build -d",
+    "docker:logs": "docker-compose logs -f digbot",
+    "docker:down": "docker-compose down",
+    "up": "npm run docker:up && npm run docker:logs",
+    "down": "npm run docker:stop"
   },
   "repository": {
     "type": "git",

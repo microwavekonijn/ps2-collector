@@ -22,5 +22,4 @@ export default class Connector implements Runnable {
 
         await this.client.close();
     }
-
 }

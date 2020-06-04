@@ -6,7 +6,7 @@ export default class Collector {
         service: 'event',
         action: 'subscribe',
         characters: ['all'],
-        eventNames: [EventName.ALL],
+        eventNames: [EventName.METAGAME_EVENT],
         worlds: ['all'],
         logicalAndCharactersWithWorlds: true,
     }];

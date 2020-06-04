@@ -1,0 +1,16 @@
+version: '3.0'
+
+services:
+  mongo:
+    image: mongo
+    ports:
+      - 27017
+  digbot:
+    build: .
+    depends_on:
+      - mongo
+    tty: true
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/collector
+      - CENSUS_SERVICE_ID
+
