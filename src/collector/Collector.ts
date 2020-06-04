@@ -26,7 +26,16 @@ export default class Collector implements Runnable {
         });
 
         this.census.on('message', (data) => {
-            Collector.logger.info(`Received: ${data.toString()}`);
+            const payload = JSON.parse(data.toString());
+
+            if (payload.service == 'event')
+                switch (payload.type) {
+                    case 'serviceMessage':
+                        Collector.logger.info(`Received: ${JSON.stringify(payload.payload)}`);
+                        break;
+                    case 'heartbeat':
+                        Collector.logger.silly(`Heartbeat: ${JSON.stringify(payload.payload)}`);
+                }
         });
     }
 
