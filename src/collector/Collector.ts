@@ -3,6 +3,7 @@ import { inject, injectable } from 'inversify';
 import WebSocket from 'ws';
 import { getLogger } from '../logging';
 import { URL } from 'url';
+import config from '../config';
 
 @injectable()
 export default class Collector implements Runnable {
@@ -16,6 +17,12 @@ export default class Collector implements Runnable {
     public async start(): Promise<void> {
         this.census.on('open', () => {
             Collector.logger.info(`Listening to census websocket (${this.maskedUrl})`);
+
+            config.collector.subscribe.forEach(subscribe => {
+                const req = JSON.stringify(subscribe);
+                Collector.logger.info(`Subscribing: ${req}`);
+                this.census.send(req);
+            });
         });
 
         this.census.on('message', (data) => {
