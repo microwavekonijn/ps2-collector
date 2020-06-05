@@ -1,6 +1,6 @@
-import {Container, injectable, multiInject} from "inversify";
-import Runnable, {RUNNABLE} from "./concerns/Runnable";
-import {getLogger} from "../logging";
+import { Container, injectable, multiInject } from 'inversify';
+import Runnable, { RUNNABLE } from './concerns/Runnable';
+import { getLogger } from '../logging';
 import config from '../config';
 
 enum KernelState {
@@ -46,10 +46,10 @@ export default class Kernel {
 
         try {
             Kernel.logger.info('Booting services');
-            await Promise.all(this.runnables.map((runnable) => runnable.boot?.apply(runnable)));
+            await Promise.all(this.runnables.map((runnable) => runnable.boot?.apply(runnable, [this.container])));
 
             Kernel.logger.info('Starting services');
-            await Promise.all(this.runnables.map(runnable => runnable.start?.apply(runnable)));
+            await Promise.all(this.runnables.map(runnable => runnable.start?.apply(runnable, [this.container])));
 
             this.status = KernelState.Running;
         } catch (e) {

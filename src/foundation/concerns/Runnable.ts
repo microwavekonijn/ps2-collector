@@ -1,7 +1,9 @@
-export default interface Runnable {
-    boot?(): Promise<void>;
+import { Container } from 'inversify';
 
-    start?(): Promise<void>;
+export default interface Runnable {
+    boot?(container: Container): Promise<void>;
+
+    start?(container: Container): Promise<void>;
 
     terminate?(): Promise<void>;
 }

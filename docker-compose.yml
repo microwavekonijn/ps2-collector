@@ -5,12 +5,12 @@ services:
     image: mongo
     ports:
       - 27017
-  digbot:
+  ps2collector:
     build: .
     depends_on:
       - mongo
     tty: true
     environment:
-      - MONGO_URL=mongodb://mongo:27017/collector
+      - MONGODB_URL=mongodb://mongo:27017/collector
       - CENSUS_SERVICE_ID
 

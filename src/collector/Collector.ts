@@ -1,9 +1,10 @@
 import Runnable from '../foundation/concerns/Runnable';
-import { inject, injectable } from 'inversify';
+import { Container, inject, injectable } from 'inversify';
 import WebSocket from 'ws';
 import { getLogger } from '../logging';
 import { URL } from 'url';
 import config from '../config';
+import { Db } from 'mongodb';
 
 @injectable()
 export default class Collector implements Runnable {
@@ -11,10 +12,11 @@ export default class Collector implements Runnable {
 
     public constructor(
         @inject('ps2ws') private readonly census: WebSocket,
-    ) {
-    }
+    ) {}
 
-    public async start(): Promise<void> {
+    public async start(container: Container): Promise<void> {
+        const db = container.get(Db);
+
         this.census.on('open', () => {
             Collector.logger.info(`Listening to census websocket (${this.maskedUrl})`);
 
@@ -25,17 +27,22 @@ export default class Collector implements Runnable {
             });
         });
 
-        this.census.on('message', (data) => {
-            const payload = JSON.parse(data.toString());
+        this.census.on('message', (raw) => {
+            try {
+                const data = JSON.parse(raw.toString());
 
-            if (payload.service == 'event')
-                switch (payload.type) {
-                    case 'serviceMessage':
-                        Collector.logger.info(`Received: ${JSON.stringify(payload.payload)}`);
-                        break;
-                    case 'heartbeat':
-                        Collector.logger.silly(`Heartbeat: ${JSON.stringify(payload.payload)}`);
-                }
+                if (data.service == 'event')
+                    switch (data.type) {
+                        case 'serviceMessage':
+                            db.collection(data.payload.event_name).insertOne(data.payload);
+                            break;
+                        case 'heartbeat':
+                            Collector.logger.silly(`Heartbeat: ${JSON.stringify(data.payload)}`);
+                            break;
+                    }
+            } catch (e) {
+                Collector.logger.warn(`Could not parse payload: ${raw}`);
+            }
         });
     }
 

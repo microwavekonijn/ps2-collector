@@ -8,10 +8,10 @@
     "build": "rm -rf ./dist && tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "docker:up": "docker-compose up --build -d",
-    "docker:logs": "docker-compose logs -f digbot",
+    "docker:logs": "docker-compose logs -f ps2collector",
     "docker:down": "docker-compose down",
     "up": "npm run docker:up && npm run docker:logs",
-    "down": "npm run docker:stop"
+    "down": "npm run docker:down"
   },
   "repository": {
     "type": "git",
