@@ -34,6 +34,7 @@ export default class Collector implements Runnable {
                 if (data.service == 'event')
                     switch (data.type) {
                         case 'serviceMessage':
+                            data.payload.recorded_at = Date.now();
                             db.collection(data.payload.event_name).insertOne(data.payload);
                             break;
                         case 'heartbeat':
