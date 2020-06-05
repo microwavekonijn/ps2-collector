@@ -1,12 +1,20 @@
 import EventName from './EventName';
-import Character from './Character';
-import World from './World';
+import { Character, World } from './BaseEntities';
 
-export default interface SubscribeAction {
+declare type SubscribeAction = {
     service: 'event';
     action: 'subscribe';
-    characters: Array<Character>;
+    characters?: Array<Character>;
     worlds: Array<World>;
     eventNames: Array<EventName>;
     logicalAndCharactersWithWorlds?: boolean;
+} | {
+    service: 'event';
+    action: 'subscribe';
+    characters: Array<Character>;
+    worlds?: Array<World>;
+    eventNames: Array<EventName>;
+    logicalAndCharactersWithWorlds?: boolean;
 }
+
+export default SubsribeAction;

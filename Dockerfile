@@ -9,6 +9,6 @@ COPY . .
 
 RUN npm run build \
     && npm prune --production \
-    && rm -r src
+    && rm -r src tsconfig.json
 
 CMD ["npm", "start"]

@@ -1,6 +1,6 @@
 import EventName from './EventName';
-import Character from './Character';
-import World from './World';
+import { Character, World } from './BaseEntities';
+
 
 declare type ClearSubscribeAction = {
     service: 'event';
