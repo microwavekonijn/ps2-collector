@@ -2,8 +2,9 @@
   "name": "ps2-alert-collector",
   "version": "1.0.0",
   "description": "Planetside 2 alert data collector using the PS2 census api.",
+  "main": "./dist",
   "scripts": {
-    "start": "node ./dist",
+    "start": "node .",
     "dev": "ts-node ./src",
     "build": "rm -rf ./dist && tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
