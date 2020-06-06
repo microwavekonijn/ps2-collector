@@ -10,7 +10,7 @@ export default new ContainerModule((bind) => {
     bind(RUNNABLE).to(Collector);
 
     bind<PS2wsUrl>('ps2wsUrlPc')
-        .toConstantValue(new PS2wsUrl(config.census.ps2ws));
+        .toConstantValue(new PS2wsUrl(config.census.serviceID, config.census.ps2ws));
 
     bind<WebSocket>('ps2ws')
         .toDynamicValue(({container}) => {

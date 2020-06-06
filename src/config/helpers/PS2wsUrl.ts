@@ -1,16 +1,16 @@
 import { PS2wsConfig } from '../concerns/collector';
-import config from '../index';
 
 export default class PS2wsUrl {
     public constructor(
+        private readonly serviceID: string,
         private readonly config: PS2wsConfig,
     ) {}
 
     public toString(): string {
-        return `${config.census.ps2ws.url}?environment=${config.census.ps2ws.environment}&service-id=s:${config.census.serviceID}`;
+        return `${this.config.url}?environment=${this.config.environment}&service-id=s:${this.serviceID}`;
     }
 
     public toMaskedString(): string {
-        return `${config.census.ps2ws.url}?environment=${config.census.ps2ws.environment}&service-id=s:*`;
+        return `${this.config.url}?environment=${this.config.environment}&service-id=s:*`;
     }
 }

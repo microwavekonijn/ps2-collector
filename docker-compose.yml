@@ -13,4 +13,3 @@ services:
     environment:
       - MONGODB_URL=mongodb://mongo:27017/collector
       - CENSUS_SERVICE_ID
-
