@@ -12,6 +12,7 @@
 ## Config
 Set the environment variables:
 - `CENSUS_SERVICE_ID` to your cenus service id(required);
+- `MONGODB_URL` to the connect to your MongoDB instance(default: `mongodb://localhost:27017/ps2collector`);
 - `LOG_LEVEL` to manage the log level(optional; silly, verbose, debug, info(default), warn, error).
 
 ## Running
