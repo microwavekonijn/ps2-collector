@@ -1,6 +1,8 @@
 # PS2 collector
 
 [![David DM Badge](https://david-dm.org/microwavekonijn/ps2-collector.svg)](https://david-dm.org/microwavekonijn/ps2-collector)
+[![David DM Badge](https://david-dm.org/microwavekonijn/ps2-collector/dev-status.svg)](https://david-dm.org/microwavekonijn/ps2-collector?type=dev)
+
 
 ## Requirements
 - Node v12;
