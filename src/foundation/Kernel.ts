@@ -19,6 +19,9 @@ export default class Kernel {
 
     public static readonly version: string = '1.0.0';
 
+    /**
+     * @type {KernelState} State of the kernel
+     */
     private status: KernelState = KernelState.Idle;
 
     /**
