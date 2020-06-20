@@ -24,7 +24,7 @@ export default class Collector implements Runnable {
     public async start(container: Container): Promise<void> {
         const db = container.get(Db);
 
-        this.client.on('raw', (payload: any) => {
+        this.client.on('event', (payload: any) => {
             payload.recorded_at = new Date();
             db.collection(payload.event_name).insertOne(payload);
         });

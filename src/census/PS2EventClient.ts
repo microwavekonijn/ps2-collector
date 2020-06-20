@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 import WebSocket, { Data } from 'ws';
 import { ClientEvents, PS2ClientConfig, PS2ClientSubscription, PS2Environment, State } from './utils/Types';
 import Timeout = NodeJS.Timeout;
+import DuplicateFilter from './utils/DuplicateFilter';
 
 export default class PS2EventClient extends EventEmitter {
     private static readonly baseUri = 'wss://push.planetside2.com/streaming';
@@ -51,6 +52,14 @@ export default class PS2EventClient extends EventEmitter {
      */
     private subscriptions: Array<PS2ClientSubscription>;
 
+    private readonly duplicateFilter?: DuplicateFilter;
+
+    /**
+     * @type {Function} Filter/recorder function to call to check duplicates
+     */
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    private readonly duplicateRecorder: Function;
+
     /**
      * @param {string} serviceId Used to as authentication to connect to the gateway
      * @param {PS2ClientConfig} Client options
@@ -61,6 +70,7 @@ export default class PS2EventClient extends EventEmitter {
             environment = 'ps2',
             heartbeatInterval = 30000,
             subscriptions = [],
+            duplicateFilter = new DuplicateFilter(),
         }: PS2ClientConfig = {},
     ) {
         super();
@@ -68,6 +78,13 @@ export default class PS2EventClient extends EventEmitter {
         this.environment = environment;
         this.subscriptions = subscriptions;
         this.heartbeatInterval = heartbeatInterval;
+
+        if (duplicateFilter) {
+            this.duplicateFilter = duplicateFilter;
+            this.duplicateRecorder = (e: any) => duplicateFilter.record(e);
+        } else {
+            this.duplicateRecorder = () => true;
+        }
     }
 
     /**
@@ -100,7 +117,7 @@ export default class PS2EventClient extends EventEmitter {
 
             this.once(ClientEvents.CLIENT_READY, accept);
             this.once(ClientEvents.CLIENT_DISCONNECTED, decline);
-            
+
             if (this.connection && this.connection.readyState === WebSocket.OPEN) {
                 // TODO: Maybe test connection?
                 this.emitReady();
@@ -188,7 +205,9 @@ export default class PS2EventClient extends EventEmitter {
                     // TODO: Together with the heartbeats, the statuses of servers can be monitored
                     break;
                 case 'serviceMessage':
-                    this.emit(ClientEvents.PS2_RAW, data.payload);
+                    this.duplicateRecorder(data.payload)
+                        ? this.emit(ClientEvents.PS2_EVENT, data.payload)
+                        : this.emit(ClientEvents.PS2_DUPLICATE, data.payload);
                     break;
                 default:
                     throw new Error(`Received unknown event service: ${JSON.stringify(data)}`);
