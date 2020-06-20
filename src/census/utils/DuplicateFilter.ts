@@ -102,6 +102,6 @@ export default class DuplicateFilter {
      * @return {string}
      */
     private worldHash(event: any): string {
-        return `${event.world_id}:${event.timestamp}`;
+        return `${event.zone_id}:${event.world_id}:${event.timestamp}`;
     }
 }
