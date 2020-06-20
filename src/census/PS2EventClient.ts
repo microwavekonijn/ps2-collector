@@ -84,6 +84,8 @@ export default class PS2EventClient extends EventEmitter {
             const accept = () => {
                 cleanup();
                 resolve();
+
+                this.subscribe();
             };
 
             const decline = (e: any) => {
@@ -98,9 +100,7 @@ export default class PS2EventClient extends EventEmitter {
 
             this.once(ClientEvents.CLIENT_READY, accept);
             this.once(ClientEvents.CLIENT_DISCONNECTED, decline);
-
-            this.once('ready', () => this.subscribe());
-
+            
             if (this.connection && this.connection.readyState === WebSocket.OPEN) {
                 // TODO: Maybe test connection?
                 this.emitReady();
