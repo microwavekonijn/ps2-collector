@@ -1,27 +1,25 @@
 import { ContainerModule } from 'inversify';
 import { RUNNABLE } from '../foundation/concerns/Runnable';
 import Collector from './Collector';
-import WebSocket from 'ws';
+import PS2EventClient from '../census/PS2EventClient';
 import config from '../config';
 import { getLogger } from '../logging';
-import PS2wsUrl from '../config/helpers/PS2wsUrl';
 
 export default new ContainerModule((bind) => {
     bind(RUNNABLE).to(Collector);
 
-    bind<PS2wsUrl>('ps2wsUrlPc')
-        .toConstantValue(new PS2wsUrl(config.census.serviceID, config.census.ps2ws));
+    bind(PS2EventClient).toDynamicValue(() => {
+        const client = new PS2EventClient(config.census.serviceID, {
+            subscriptions: config.collector.subscribe,
+        });
+        const logger = getLogger('ps2-event-client');
 
-    bind<WebSocket>('ps2ws')
-        .toDynamicValue(({container}) => {
-            const urlPc = container.get<PS2wsUrl>('ps2wsUrlPc');
-            const ws = new WebSocket(urlPc.toString());
-            const logger = getLogger('ps2-websocket');
+        client.on('warn', (e) => logger.warn(e));
+        client.on('ready', () => logger.info('Connected'));
+        client.on('disconnected', () => logger.info('Disconnected'));
+        client.on('reconnecting', () => logger.info('Reconnecting'));
+        client.on('subscribed', (sub) => logger.info(`Subscribed to: ${JSON.stringify(sub)}`));
 
-            ws.on('open', () => logger.info(`Listening to census websocket (${urlPc.toMaskedString()})`));
-            ws.on('close', (code, reason) => logger.info(`Connection closed with code ${code}: ${reason}`));
-
-            return ws;
-        })
-        .inSingletonScope();
+        return client;
+    }).inSingletonScope();
 });

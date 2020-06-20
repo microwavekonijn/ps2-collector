@@ -1,15 +1,12 @@
-import SubscribeAction from '../collector/types/SubscribeAction';
 import EventName from '../collector/types/EventName';
+import { PS2ClientSubscription } from '../census/utils/Types';
 
 export default class Collector {
     /**
      * @type {SubscribeAction[]} Subscriptions that are made when starting the websocket
      */
-    public readonly subscribe: Array<SubscribeAction> = [{
-        service: 'event',
-        action: 'subscribe',
-        eventNames: [EventName.METAGAME_EVENT],
+    public readonly subscribe: Array<PS2ClientSubscription> = [{
+        eventNames: [EventName.ALL],
         worlds: ['all'],
-        logicalAndCharactersWithWorlds: true,
     }];
 }
