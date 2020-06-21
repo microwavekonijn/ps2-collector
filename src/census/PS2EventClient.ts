@@ -3,8 +3,31 @@ import WebSocket, { Data } from 'ws';
 import { ClientEvents, PS2ClientConfig, PS2ClientSubscription, PS2Environment, State } from './utils/Types';
 import Timeout = NodeJS.Timeout;
 import DuplicateFilter from './utils/DuplicateFilter';
+import { GenericEvent } from './utils/PS2Events';
 
-export default class PS2EventClient extends EventEmitter {
+declare interface PS2EventClient {
+    on(event: 'ready', listener: () => void): this;
+    on(event: 'disconnected', listener: () => void): this;
+    on(event: 'reconnecting', listener: () => void): this;
+    on(event: 'error', listener: (e: any) => void): this;
+    on(event: 'warn', listener: (e: any) => void): this;
+    // on(event: 'debug', listener: () => void): this;
+    on(event: 'event', listener: (event: GenericEvent) => void): this;
+    on(event: 'duplicate', listener: (event: GenericEvent) => void): this;
+    on(event: 'subscribed', listener: (subscription: any) => void): this;
+
+    once(event: 'ready', listener: () => void): this;
+    once(event: 'disconnected', listener: () => void): this;
+    once(event: 'reconnecting', listener: () => void): this;
+    once(event: 'error', listener: (e: any) => void): this;
+    once(event: 'warn', listener: (e: any) => void): this;
+    // once(event: 'debug', listener: () => void): this;
+    once(event: 'event', listener: (event: GenericEvent) => void): this;
+    once(event: 'duplicate', listener: (event: GenericEvent) => void): this;
+    once(event: 'subscribed', listener: (subscription: any) => void): this;
+}
+
+class PS2EventClient extends EventEmitter {
     private static readonly baseUri = 'wss://push.planetside2.com/streaming';
 
     /**
@@ -105,7 +128,7 @@ export default class PS2EventClient extends EventEmitter {
                 this.subscribe();
             };
 
-            const decline = (e: any) => {
+            const decline = (e?: any) => {
                 cleanup();
                 reject(e);
             };
@@ -367,3 +390,5 @@ export default class PS2EventClient extends EventEmitter {
         }));
     }
 }
+
+export default PS2EventClient;

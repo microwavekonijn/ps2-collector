@@ -33,6 +33,10 @@ export default class Connector implements Runnable {
     public async terminate(): Promise<void> {
         Connector.logger.info('Closing connection');
 
-        await this.client.close();
+        try {
+            await this.client.close();
+        } catch {
+            // Beep beep
+        }
     }
 }

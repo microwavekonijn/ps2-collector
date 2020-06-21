@@ -2,6 +2,8 @@ export default class DuplicateFilter {
     private cache = new Set<string>();
     private decayingCache = new Set<string>();
 
+    private readonly ignore = ['GainExperience'];
+
     /**
      * Creates and starts the DuplicateFilter. Note that it the process of decay can vary between events.
      * Decay varies between decay ms and 2*decay ms.
@@ -19,11 +21,13 @@ export default class DuplicateFilter {
      * @return {boolean} whether it has been recorded before
      */
     public record(event: any): boolean {
+        if (this.ignore.includes(event.event_name))
+            return true;
+
         const hash = this.hash(event);
 
-        if (this.cache.has(hash) || this.decayingCache.has(hash)) {
+        if (this.cache.has(hash) || this.decayingCache.has(hash))
             return false;
-        }
 
         this.cache.add(hash);
 
