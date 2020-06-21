@@ -28,8 +28,9 @@ export default class Collector implements Runnable {
             db.collection(event.event_name).insertOne({recorded_at: new Date(), ...event});
         });
 
-        this.client.on('duplicate', (payload: any) => {
-            Collector.logger.debug(`Duplicate, world ${payload.world_id}: ${JSON.stringify(payload)}`);
+        this.client.on('duplicate', (event) => {
+            db.collection(event.event_name).insertOne({recorded_at: new Date(), marked_duplicate: true, ...event});
+
         });
 
         await this.client.connect();

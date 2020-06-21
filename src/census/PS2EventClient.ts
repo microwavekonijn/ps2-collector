@@ -14,7 +14,7 @@ declare interface PS2EventClient {
     // on(event: 'debug', listener: () => void): this;
     on(event: 'event', listener: (event: GenericEvent) => void): this;
     on(event: 'duplicate', listener: (event: GenericEvent) => void): this;
-    on(event: 'subscribed', listener: (subscription: any) => void): this;
+    on(event: 'subscribed', listener: (subscription: GenericEvent) => void): this;
 
     once(event: 'ready', listener: () => void): this;
     once(event: 'disconnected', listener: () => void): this;
@@ -24,7 +24,7 @@ declare interface PS2EventClient {
     // once(event: 'debug', listener: () => void): this;
     once(event: 'event', listener: (event: GenericEvent) => void): this;
     once(event: 'duplicate', listener: (event: GenericEvent) => void): this;
-    once(event: 'subscribed', listener: (subscription: any) => void): this;
+    once(event: 'subscribed', listener: (subscription: GenericEvent) => void): this;
 }
 
 class PS2EventClient extends EventEmitter {
