@@ -17,7 +17,7 @@ export default class App {
      */
     public get modules(): ContainerModule[] {
         return [
-            require('../database').default,
+            // require('../database').default,
             require('../collector').default,
         ];
     };

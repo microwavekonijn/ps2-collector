@@ -1,7 +1,9 @@
-require('reflect-metadata');
-require('dotenv').config();
+import 'reflect-metadata';
+import { config as dotenv } from 'dotenv';
 
-import {Container} from 'inversify';
+dotenv();
+
+import { Container } from 'inversify';
 import Kernel from './foundation/Kernel';
 import config from './config';
 
