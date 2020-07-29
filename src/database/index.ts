@@ -1,7 +1,7 @@
 import { ContainerModule } from 'inversify';
 import Runnable, { RUNNABLE } from '../foundation/concerns/Runnable';
 import Connector from './Connector';
-import { Db, MongoClient } from 'mongodb';
+import { MongoClient } from 'mongodb';
 import config from '../config';
 
 export default new ContainerModule(bind => {
@@ -9,9 +9,5 @@ export default new ContainerModule(bind => {
 
     bind(MongoClient)
         .toDynamicValue(() => new MongoClient(config.database.mongoUri, config.database.mongoConfig))
-        .inSingletonScope();
-
-    bind(Db)
-        .toDynamicValue(({container}) => container.get(MongoClient).db())
         .inSingletonScope();
 });
