@@ -12,15 +12,12 @@ export default new ContainerModule((bind) => {
         const client = new Client({
             serviceId: config.census.serviceID,
             streamManagerConfig: {
-                subscriptions: [{
-                    characters: ['all'],
-                    eventNames: ['Death'],
-                }],
+                subscriptions: config.collector.subscriptions,
             },
         });
         const logger = getLogger('ps2-client');
 
-        client.on('warn', (e) => logger.warn(e));
+        client.on('warn', e => logger.warn(e));
         client.on('ready', () => logger.info('Connected'));
         client.on('disconnected', () => logger.info('Disconnected'));
         client.on('reconnecting', () => logger.info('Reconnecting'));

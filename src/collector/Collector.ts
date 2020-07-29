@@ -21,7 +21,7 @@ export default class Collector implements Runnable {
      */
     public async start(): Promise<void> {
 
-        this.client.on('Death', event => console.log(event.character_id, event.attacker_character_id));
+        this.client.on('death', event => console.log(event.character_id, event.attacker_character_id));
 
         await this.client.watch();
     }
