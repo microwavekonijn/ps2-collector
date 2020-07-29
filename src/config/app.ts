@@ -1,6 +1,7 @@
 import { ContainerModule } from 'inversify';
 import { get, getBool } from './utils/env';
 
+/* eslint-disable @typescript-eslint/no-var-requires */
 export default class App {
     /**
      * @type {string} The current environment
@@ -17,7 +18,7 @@ export default class App {
      */
     public get modules(): ContainerModule[] {
         return [
-            // require('../database').default,
+            require('../database').default,
             require('../collector').default,
         ];
     };

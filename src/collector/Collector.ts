@@ -35,14 +35,18 @@ export default class Collector implements Runnable {
                 recorded_at: new Date(),
                 duplicate: false,
                 ...event,
+                client: undefined,
             });
         });
 
         this.client.on('duplicate', (event) => {
+            if (['GainExperience'].includes(event.event_name)) return;
+
             this.db.collection(`World ${event.world_id}_${event.event_name}`).insertOne({
                 recorded_at: new Date(),
                 duplicate: true,
                 ...event,
+                client: undefined,
             });
         });
 
