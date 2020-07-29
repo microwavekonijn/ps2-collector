@@ -31,7 +31,7 @@ export default class Collector implements Runnable {
         this.client.on('ps2Event', (event) => {
             if (['GainExperience'].includes(event.event_name)) return;
 
-            this.db.collection(`World ${event.world_id}_${event.event_name}`).insertOne({
+            this.db.collection(`World_${event.world_id}_${event.event_name}`).insertOne({
                 recorded_at: new Date(),
                 duplicate: false,
                 ...event,
@@ -42,7 +42,7 @@ export default class Collector implements Runnable {
         this.client.on('duplicate', (event) => {
             if (['GainExperience'].includes(event.event_name)) return;
 
-            this.db.collection(`World ${event.world_id}_${event.event_name}`).insertOne({
+            this.db.collection(`World_${event.world_id}_${event.event_name}`).insertOne({
                 recorded_at: new Date(),
                 duplicate: true,
                 ...event,
@@ -88,10 +88,9 @@ export default class Collector implements Runnable {
         });
 
         this.client.on('debug', (info, label) => {
-            this.db.collection(collection).insertOne({
+            this.db.collection('App_Debug').insertOne({
                 recorded_at: new Date(),
-                event: 'debug',
-                message: info,
+                info,
                 label,
             });
         });
