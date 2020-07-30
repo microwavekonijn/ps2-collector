@@ -1,5 +1,5 @@
 import Runnable from '../foundation/concerns/Runnable';
-import { injectable } from 'inversify';
+import { injectable, multiInject } from 'inversify';
 import { getLogger } from '../logging';
 import { Client } from 'ps2census';
 import { Db, MongoClient } from 'mongodb';
@@ -8,30 +8,23 @@ import { Db, MongoClient } from 'mongodb';
 export default class Collector implements Runnable {
     private static readonly logger = getLogger('collector');
 
-    private db: Db;
-
     /**
-     * @param {Client} client
+     * @param {Client[]} clients
      * @param {MongoClient} mongo
      */
     public constructor(
-        private readonly client: Client,
+        @multiInject(Client) private readonly clients: Client[],
         private readonly mongo: MongoClient,
     ) {}
 
-    /**
-     * Start listening to the websocket
-     *
-     * @return {Promise<void>}
-     */
-    public async start(): Promise<void> {
-        this.db = this.mongo.db();
+    private prepareClient(db: Db, client: Client) {
         const collection = 'App_Census';
+        const environment = client.environment;
 
-        this.client.on('ps2Event', (event) => {
+        client.on('ps2Event', (event) => {
             if (['GainExperience'].includes(event.event_name)) return;
 
-            this.db.collection(`World_${event.world_id}_${event.event_name}`).insertOne({
+            db.collection(`World_${event.world_id}_${event.event_name}`).insertOne({
                 recorded_at: new Date(),
                 duplicate: false,
                 ...event,
@@ -39,10 +32,10 @@ export default class Collector implements Runnable {
             });
         });
 
-        this.client.on('duplicate', (event) => {
+        client.on('duplicate', (event) => {
             if (['GainExperience'].includes(event.event_name)) return;
 
-            this.db.collection(`World_${event.world_id}_${event.event_name}`).insertOne({
+            db.collection(`World_${event.world_id}_${event.event_name}`).insertOne({
                 recorded_at: new Date(),
                 duplicate: true,
                 ...event,
@@ -50,52 +43,69 @@ export default class Collector implements Runnable {
             });
         });
 
-        this.client.on('warn', (e) => {
-            this.db.collection(collection).insertOne({
+        client.on('warn', (e) => {
+            db.collection(collection).insertOne({
                 recorded_at: new Date(),
                 event: 'warn',
                 message: e.message,
+                environment,
             });
         });
 
-        this.client.on('ready', () => {
-            this.db.collection(collection).insertOne({
+        client.on('ready', () => {
+            db.collection(collection).insertOne({
                 recorded_at: new Date(),
                 event: 'ready',
+                environment,
             });
         });
 
-        this.client.on('disconnected', () => {
-            this.db.collection(collection).insertOne({
+        client.on('disconnected', () => {
+            db.collection(collection).insertOne({
                 recorded_at: new Date(),
                 event: 'disconnected',
+                environment,
             });
         });
 
-        this.client.on('reconnecting', () => {
-            this.db.collection(collection).insertOne({
+        client.on('reconnecting', () => {
+            db.collection(collection).insertOne({
                 recorded_at: new Date(),
                 event: 'reconnecting',
+                environment,
             });
         });
 
-        this.client.on('subscribed', (sub) => {
-            this.db.collection(collection).insertOne({
+        client.on('subscribed', (sub) => {
+            db.collection(collection).insertOne({
                 recorded_at: new Date(),
                 event: 'subscribed',
                 message: sub,
+                environment,
             });
         });
 
-        this.client.on('debug', (info, label) => {
-            this.db.collection('App_Debug').insertOne({
+        client.on('debug', (info, label) => {
+            db.collection('App_Debug').insertOne({
                 recorded_at: new Date(),
                 info,
                 label,
+                environment,
             });
         });
+    }
 
-        await this.client.watch();
+    /**
+     * Start listening to the websocket
+     *
+     * @return {Promise<void>}
+     */
+    public async start(): Promise<void> {
+        const db = this.mongo.db();
+
+        this.clients.forEach(c => this.prepareClient(db, c));
+
+        await Promise.all(this.clients.map(c => c.watch()));
     }
 
     /**
@@ -105,6 +115,6 @@ export default class Collector implements Runnable {
      */
     public async terminate(): Promise<void> {
         Collector.logger.info('Terminating census websocket');
-        this.client.destroy();
+        this.clients.map(c => c.destroy());
     }
 }
