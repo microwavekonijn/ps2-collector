@@ -18,7 +18,7 @@ export default new ContainerModule((bind) => {
                     subscriptions: config.collector.subscriptions,
                 },
             });
-            const logger = getLogger('ps2-client');
+            const logger = getLogger(`${environment}-client`);
 
             client.on('warn', e => logger.warn(e));
             client.on('ready', () => logger.info('Connected'));
